@@ -201,6 +201,7 @@ import java.nio.ByteBuffer;
  *
  *
  */
+//字节缓冲区接口
 public interface ChannelBuffer extends Comparable<ChannelBuffer> {
 
     /**

@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+//字节缓冲区抽象实现 和netty中的ByteBuff一样 采用readerIndex 和writeIndex 两个索引
 public abstract class AbstractChannelBuffer implements ChannelBuffer {
 
     private int readerIndex;

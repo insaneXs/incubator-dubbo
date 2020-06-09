@@ -25,3 +25,37 @@ We are now collecting dubbo user info in order to help us to improve dubbo bette
 * [Dubbo developer guide(English)](http://dubbo.apache.org/books/dubbo-dev-book-en/) or [Dubbo开发手册(中文)](http://dubbo.apache.org/books/dubbo-dev-book/) - Detailly introduce the design principal, extension mechanisms, code conventions, version control and building project, etc.
 * [Dubbo admin manual(English)](http://dubbo.apache.org/books/dubbo-admin-book-en/) or [Dubbo管理手册(中文)](http://dubbo.apache.org/books/dubbo-admin-book/) - Describe how to use Dubbo registry and admin-console.
 
+## Dubbo 源码阅读  
+
+### 各模块功能说明  
+* dubbo-bootstrap 启动引导  
+* dubbo-cluster 
+* dubbo-common 通用组件  
+* dubbo-compatible  
+* dubbo-config 配置相关 
+* dubbo-container  
+* dubbo-demo  
+* dubbo-filter 
+* dubbo-monitor
+* dubbo-plugin
+* dubbo-registry  注册中心
+* dubbo-remoting 负责传输
+* dubbo-rpc RPC核心功能
+* dubbo-serialization 负责序列化
+* dubbo-test  
+
+#### dubbo-remoting
+##### dubbo-remoting-api
+    - org.apache.dubbo.remoting
+        - buffer
+            - AbstractChannelBuffer
+            - ByteBufferBackedChannelBuffer
+            - ChannelBuffer
+            - ChannelBufferFactory
+            - ChannelBufferInputStream
+            - ChannelBufferOutputStream
+            - ChannelBuffers
+            - DirectChannelBufferFactory
+            - DynamicChannelBuffer
+            - HeapChannelBuffer
+            - HeapChannelBufferFactory
