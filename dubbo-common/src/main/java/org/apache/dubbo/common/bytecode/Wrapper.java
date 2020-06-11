@@ -111,9 +111,11 @@ public abstract class Wrapper {
     }
 
     private static Wrapper makeWrapper(Class<?> c) {
+        //无法包装原始类型
         if (c.isPrimitive())
             throw new IllegalArgumentException("Can not create wrapper for primitive type: " + c);
 
+        //
         String name = c.getName();
         ClassLoader cl = ClassHelper.getClassLoader(c);
 
@@ -220,6 +222,7 @@ public abstract class Wrapper {
 
         // make class
         long id = WRAPPER_CLASS_COUNTER.getAndIncrement();
+        //通过javassist生成字节码 动态创建类
         ClassGenerator cc = ClassGenerator.newInstance(cl);
         cc.setClassName((Modifier.isPublic(c.getModifiers()) ? Wrapper.class.getName() : c.getName() + "$sw") + id);
         cc.setSuperClass(Wrapper.class);

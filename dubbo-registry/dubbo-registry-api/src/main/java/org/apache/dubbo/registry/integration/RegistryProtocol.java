@@ -130,11 +130,13 @@ public class RegistryProtocol implements Protocol {
     @Override
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
         //export invoker
+        //STEP 1 本地导出 => 启动服务器 绑定端口 并监听
         final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker);
 
         URL registryUrl = getRegistryUrl(originInvoker);
 
         //registry provider
+        //获取注册中心实例
         final Registry registry = getRegistry(originInvoker);
         final URL registedProviderUrl = getRegistedProviderUrl(originInvoker);
 
@@ -144,6 +146,7 @@ public class RegistryProtocol implements Protocol {
         ProviderConsumerRegTable.registerProvider(originInvoker, registryUrl, registedProviderUrl);
 
         if (register) {
+            //通过注册中心实例注册服务
             register(registryUrl, registedProviderUrl);
             ProviderConsumerRegTable.getProviderWrapper(originInvoker).setReg(true);
         }
@@ -159,9 +162,12 @@ public class RegistryProtocol implements Protocol {
     }
 
     @SuppressWarnings("unchecked")
+    //导出服务
     private <T> ExporterChangeableWrapper<T> doLocalExport(final Invoker<T> originInvoker) {
+        //做一层缓存，缓存未命中 => DubboProtol.export() 开启服务器 绑定端口并监听
         String key = getCacheKey(originInvoker);
         ExporterChangeableWrapper<T> exporter = (ExporterChangeableWrapper<T>) bounds.get(key);
+        //Double Check 这里需要Double Check的原因是不希望创建多个Exporter
         if (exporter == null) {
             synchronized (bounds) {
                 exporter = (ExporterChangeableWrapper<T>) bounds.get(key);

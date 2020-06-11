@@ -89,6 +89,7 @@ public abstract class AbstractConfig implements Serializable {
         return value;
     }
 
+    //通过系统属性 修改默认值
     protected static void appendProperties(AbstractConfig config) {
         if (config == null) {
             return;
