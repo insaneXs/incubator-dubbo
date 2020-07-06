@@ -34,16 +34,22 @@ public abstract class AbstractEndpoint extends AbstractPeer implements Resetable
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractEndpoint.class);
 
+    //编解码器
     private Codec2 codec;
 
+    //超时时间
     private int timeout;
 
+    //连接超时时间
     private int connectTimeout;
 
     public AbstractEndpoint(URL url, ChannelHandler handler) {
         super(url, handler);
+        //设置编解码器
         this.codec = getChannelCodec(url);
+        //设置超时时间
         this.timeout = url.getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
+        //设置连接超时时间
         this.connectTimeout = url.getPositiveParameter(Constants.CONNECT_TIMEOUT_KEY, Constants.DEFAULT_CONNECT_TIMEOUT);
     }
 
@@ -57,6 +63,10 @@ public abstract class AbstractEndpoint extends AbstractPeer implements Resetable
         }
     }
 
+    /**
+     * 重新设置timeout,connectTimeout,codec
+     * @param url
+     */
     @Override
     public void reset(URL url) {
         if (isClosed()) {

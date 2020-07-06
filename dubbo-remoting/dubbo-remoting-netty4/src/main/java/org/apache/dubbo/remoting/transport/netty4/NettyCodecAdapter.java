@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * NettyCodecAdapter.
+ * NettyCodecAdapter. 编解码适配器
  */
 final class NettyCodecAdapter {
 

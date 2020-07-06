@@ -24,6 +24,7 @@ import org.apache.dubbo.remoting.RemotingException;
 import java.net.InetSocketAddress;
 
 /**
+ * Channel的包装类
  * ChannelDelegate
  */
 public class ChannelDelegate implements Channel {

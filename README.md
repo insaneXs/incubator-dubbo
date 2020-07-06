@@ -44,6 +44,7 @@ We are now collecting dubbo user info in order to help us to improve dubbo bette
 * dubbo-serialization 负责序列化
 * dubbo-test  
 
+### 已读代码明细
 #### dubbo-remoting
 ##### dubbo-remoting-api
     - org.apache.dubbo.remoting
@@ -59,3 +60,38 @@ We are now collecting dubbo user info in order to help us to improve dubbo bette
             - DynamicChannelBuffer
             - HeapChannelBuffer
             - HeapChannelBufferFactory
+        - transport
+            - AbstractChannel
+            - AbstractChannelHandlerDelegate
+            - AbstractClient
+            - AbstractCodec
+            - AbstractEndpoint
+            - AbstractPeer
+            - AbstractServer
+            - ChannelDelegate
+            - ChannelHandlerAdapter
+            - ChannelHandlerDelegate
+            - ChannelHanndlerDispatcher
+            - ClientDelegate
+            - CodecSupport
+            - DecodeHandler
+            - ExccedPayloadLimitException
+            - MultiMessageHandler
+            - ServerDelegate
+        - Channel
+        - ChannelHandler
+        - Client
+        - Codec
+        - Codec2
+        - Decodeable
+        - Endpoint
+        - Server
+
+##### dubbo-remoting-netty4
+    - org.apache.dubbo.remoting.transport.netty4
+        - NettyChannel
+        - NettyClient
+        - NettyClientHandler
+        - NettyCodecAdapter
+        - NettyServer
+        - NettyServerHandler

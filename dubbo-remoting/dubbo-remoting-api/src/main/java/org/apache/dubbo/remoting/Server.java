@@ -22,6 +22,7 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 
 /**
+ * 服务器接口
  * Remoting Server. (API/SPI, Prototype, ThreadSafe)
  * <p>
  * <a href="http://en.wikipedia.org/wiki/Client%E2%80%93server_model">Client/Server</a>
@@ -31,13 +32,14 @@ import java.util.Collection;
 public interface Server extends Endpoint, Resetable {
 
     /**
+     * 是否已经开始监听
      * is bound.
-     *
      * @return bound
      */
     boolean isBound();
 
     /**
+     * 获取服务器的通道
      * get channels.
      *
      * @return channels
@@ -45,6 +47,7 @@ public interface Server extends Endpoint, Resetable {
     Collection<Channel> getChannels();
 
     /**
+     * 获取指定远端地址的通道
      * get channel.
      *
      * @param remoteAddress

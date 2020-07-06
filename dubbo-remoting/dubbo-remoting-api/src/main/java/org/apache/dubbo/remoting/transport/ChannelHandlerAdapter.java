@@ -21,7 +21,7 @@ import org.apache.dubbo.remoting.ChannelHandler;
 import org.apache.dubbo.remoting.RemotingException;
 
 /**
- * ChannelHandlerAdapter.
+ * ChannelHandlerAdapter. ChannelHandler的适配器 主要目的是将Dubbo的ChannelHandler与具体底层通信框架的ChannelHandler适配
  */
 public class ChannelHandlerAdapter implements ChannelHandler {
 

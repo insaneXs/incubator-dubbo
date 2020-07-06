@@ -55,10 +55,13 @@ public class NettyClient extends AbstractClient {
         super(url, wrapChannelHandler(url, handler));
     }
 
+    //启动
     @Override
     protected void doOpen() throws Throwable {
         final NettyClientHandler nettyClientHandler = new NettyClientHandler(getUrl(), this);
+        //通过Bootstrap引导启动
         bootstrap = new Bootstrap();
+
         bootstrap.group(nioEventLoopGroup)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.TCP_NODELAY, true)
@@ -72,6 +75,7 @@ public class NettyClient extends AbstractClient {
             bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, getTimeout());
         }
 
+        //添加Netty的ChannelHandler
         bootstrap.handler(new ChannelInitializer() {
 
             @Override
@@ -85,6 +89,7 @@ public class NettyClient extends AbstractClient {
         });
     }
 
+    //连接操作
     @Override
     protected void doConnect() throws Throwable {
         long start = System.currentTimeMillis();
@@ -153,6 +158,7 @@ public class NettyClient extends AbstractClient {
         //nioEventLoopGroup.shutdownGracefully();
     }
 
+    //获取Dubbo的Channel
     @Override
     protected org.apache.dubbo.remoting.Channel getChannel() {
         Channel c = channel;

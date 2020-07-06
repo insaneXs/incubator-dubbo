@@ -28,10 +28,13 @@ import org.apache.dubbo.remoting.RemotingException;
  */
 public abstract class AbstractPeer implements Endpoint, ChannelHandler {
 
+    //消息处理器
     private final ChannelHandler handler;
 
+    //对应的URL
     private volatile URL url;
 
+    //状态
     // closing closed means the process is being closed and close is finished
     private volatile boolean closing;
 
@@ -118,6 +121,7 @@ public abstract class AbstractPeer implements Endpoint, ChannelHandler {
         return closing && !closed;
     }
 
+    //处理连接已建立
     @Override
     public void connected(Channel ch) throws RemotingException {
         if (closed) {
@@ -126,11 +130,13 @@ public abstract class AbstractPeer implements Endpoint, ChannelHandler {
         handler.connected(ch);
     }
 
+    //处理连接断开
     @Override
     public void disconnected(Channel ch) throws RemotingException {
         handler.disconnected(ch);
     }
 
+    //处理消息已发送
     @Override
     public void sent(Channel ch, Object msg) throws RemotingException {
         if (closed) {
@@ -139,6 +145,7 @@ public abstract class AbstractPeer implements Endpoint, ChannelHandler {
         handler.sent(ch, msg);
     }
 
+    //处理消息已接收
     @Override
     public void received(Channel ch, Object msg) throws RemotingException {
         if (closed) {
@@ -147,6 +154,7 @@ public abstract class AbstractPeer implements Endpoint, ChannelHandler {
         handler.received(ch, msg);
     }
 
+    //处理异常捕获
     @Override
     public void caught(Channel ch, Throwable ex) throws RemotingException {
         handler.caught(ch, ex);

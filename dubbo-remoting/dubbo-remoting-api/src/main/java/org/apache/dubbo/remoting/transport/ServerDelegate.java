@@ -26,7 +26,7 @@ import java.net.InetSocketAddress;
 import java.util.Collection;
 
 /**
- * ServerDelegate
+ * ServerDelegate 服务器的包装类
  *
  *
  */

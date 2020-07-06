@@ -22,7 +22,7 @@ import org.apache.dubbo.remoting.ChannelHandler;
 import org.apache.dubbo.remoting.RemotingException;
 
 /**
- * AbstractChannel
+ * AbstractChannel 通道类的抽象实现
  */
 public abstract class AbstractChannel extends AbstractPeer implements Channel {
 

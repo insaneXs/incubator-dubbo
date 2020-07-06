@@ -19,6 +19,7 @@ package org.apache.dubbo.remoting;
 import java.net.InetSocketAddress;
 
 /**
+ * 通道类
  * Channel. (API/SPI, Prototype, ThreadSafe)
  *
  *

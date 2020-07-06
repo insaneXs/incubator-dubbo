@@ -24,7 +24,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 
 /**
- * NettyClientHandler
+ * NettyClientHandler NettyChannel的处理器
  */
 @io.netty.channel.ChannelHandler.Sharable
 public class NettyClientHandler extends ChannelDuplexHandler {
@@ -55,10 +55,12 @@ public class NettyClientHandler extends ChannelDuplexHandler {
         ctx.fireChannelInactive();
     }
 
+    //断开处理
     @Override
     public void disconnect(ChannelHandlerContext ctx, ChannelPromise future)
             throws Exception {
         NettyChannel channel = NettyChannel.getOrAddChannel(ctx.channel(), url, handler);
+        //交给Dubbo的Handler处理
         try {
             handler.disconnected(channel);
         } finally {
@@ -66,6 +68,7 @@ public class NettyClientHandler extends ChannelDuplexHandler {
         }
     }
 
+    //交给Dubbo的Handler处理
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         NettyChannel channel = NettyChannel.getOrAddChannel(ctx.channel(), url, handler);
@@ -76,7 +79,7 @@ public class NettyClientHandler extends ChannelDuplexHandler {
         }
     }
 
-
+    //由Dubbo的Handler进行写成功的处理
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         super.write(ctx, msg, promise);
@@ -88,6 +91,7 @@ public class NettyClientHandler extends ChannelDuplexHandler {
         }
     }
 
+    //由Dubbo的Handler进行异常处理
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
