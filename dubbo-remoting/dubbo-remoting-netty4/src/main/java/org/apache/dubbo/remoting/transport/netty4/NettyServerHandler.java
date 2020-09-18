@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * NettyClientHandler
+ * NettyServerHandler NettyServer的处理器 主要作用是通过Netty的处理器将请求交给Dubbo的处理器处理
  */
 @io.netty.channel.ChannelHandler.Sharable
 public class NettyServerHandler extends ChannelDuplexHandler {
@@ -56,6 +56,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
         return channels;
     }
 
+    //连接建立
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelActive();
@@ -71,6 +72,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
         }
     }
 
+    //连接断开
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         NettyChannel channel = NettyChannel.getOrAddChannel(ctx.channel(), url, handler);
@@ -89,6 +91,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
 
     }
 
+    //获取消息时
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         NettyChannel channel = NettyChannel.getOrAddChannel(ctx.channel(), url, handler);
@@ -99,7 +102,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
         }
     }
 
-
+    //写数据
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         super.write(ctx, msg, promise);
@@ -111,6 +114,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
         }
     }
 
+    //异常捕获
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {

@@ -35,6 +35,7 @@ public abstract class AbstractCodec implements Codec2 {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractCodec.class);
 
+    //检查是否超过负载
     protected static void checkPayload(Channel channel, long size) throws IOException {
         int payload = Constants.DEFAULT_PAYLOAD;
         if (channel != null && channel.getUrl() != null) {
@@ -51,6 +52,7 @@ public abstract class AbstractCodec implements Codec2 {
         return CodecSupport.getSerialization(channel.getUrl());
     }
 
+    //是否是客户端
     protected boolean isClientSide(Channel channel) {
         String side = (String) channel.getAttribute(Constants.SIDE_KEY);
         if ("client".equals(side)) {

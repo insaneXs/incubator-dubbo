@@ -53,6 +53,13 @@ final class NettyChannel extends AbstractChannel {
         this.channel = channel;
     }
 
+    /**
+     * 提供通过内部的channel 反向查找NettyChannel的能力
+     * @param ch
+     * @param url
+     * @param handler
+     * @return
+     */
     static NettyChannel getOrAddChannel(Channel ch, URL url, ChannelHandler handler) {
         if (ch == null) {
             return null;
@@ -90,6 +97,7 @@ final class NettyChannel extends AbstractChannel {
     public boolean isConnected() {
         return !isClosed() && channel.isActive();
     }
+
 
     @Override
     public void send(Object message, boolean sent) throws RemotingException {

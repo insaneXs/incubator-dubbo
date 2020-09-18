@@ -247,6 +247,7 @@ public class DubboProtocol extends AbstractProtocol {
         URL url = invoker.getUrl();
 
         // export service.
+        //服务对应的key
         String key = serviceKey(url);
         DubboExporter<T> exporter = new DubboExporter<T>(invoker, key, exporterMap);
         exporterMap.put(key, exporter);
@@ -266,6 +267,7 @@ public class DubboProtocol extends AbstractProtocol {
             }
         }
 
+        //为Provider开启服务器
         openServer(url);
         optimizeSerialization(url);
         return exporter;
@@ -292,6 +294,7 @@ public class DubboProtocol extends AbstractProtocol {
         }
     }
 
+    //根据地址创建服务器
     private ExchangeServer createServer(URL url) {
         // send readonly event when server closes, it's enabled by default
         url = url.addParameterIfAbsent(Constants.CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString());

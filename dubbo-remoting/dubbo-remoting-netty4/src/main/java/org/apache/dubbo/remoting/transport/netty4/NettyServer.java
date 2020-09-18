@@ -46,7 +46,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 /**
- * NettyServer
+ * NettyServer 底层由Netty实现的服务器类
  */
 public class NettyServer extends AbstractServer implements Server {
 
@@ -65,8 +65,10 @@ public class NettyServer extends AbstractServer implements Server {
         super(url, ChannelHandlers.wrap(handler, ExecutorUtil.setThreadName(url, SERVER_THREAD_POOL_NAME)));
     }
 
+    //启动
     @Override
     protected void doOpen() throws Throwable {
+        //由ServerBootstrap开始启动引导
         bootstrap = new ServerBootstrap();
 
         bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("NettyServerBoss", true));
@@ -98,8 +100,10 @@ public class NettyServer extends AbstractServer implements Server {
 
     }
 
+    //关闭方法
     @Override
     protected void doClose() throws Throwable {
+        //关闭ServerSocketChannel
         try {
             if (channel != null) {
                 // unbind.
@@ -108,6 +112,8 @@ public class NettyServer extends AbstractServer implements Server {
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
         }
+
+        //关闭SocketChannel
         try {
             Collection<org.apache.dubbo.remoting.Channel> channels = getChannels();
             if (channels != null && channels.size() > 0) {
@@ -122,6 +128,8 @@ public class NettyServer extends AbstractServer implements Server {
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
         }
+
+        //关闭线程池
         try {
             if (bootstrap != null) {
                 bossGroup.shutdownGracefully();
@@ -139,6 +147,7 @@ public class NettyServer extends AbstractServer implements Server {
         }
     }
 
+    //获取内部的Channel
     @Override
     public Collection<Channel> getChannels() {
         Collection<Channel> chs = new HashSet<Channel>();

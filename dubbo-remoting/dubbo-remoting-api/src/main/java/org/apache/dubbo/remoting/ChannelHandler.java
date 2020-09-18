@@ -21,7 +21,7 @@ import org.apache.dubbo.common.extension.SPI;
 
 /**
  * ChannelHandler. (API, Prototype, ThreadSafe)
- *
+ * SPI接口，在ChannelHandler中处理各状态
  * @see org.apache.dubbo.remoting.Transporter#bind(org.apache.dubbo.common.URL, ChannelHandler)
  * @see org.apache.dubbo.remoting.Transporter#connect(org.apache.dubbo.common.URL, ChannelHandler)
  */

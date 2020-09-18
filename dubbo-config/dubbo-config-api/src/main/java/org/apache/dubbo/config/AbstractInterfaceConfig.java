@@ -161,24 +161,38 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         List<URL> registryList = new ArrayList<URL>();
         if (registries != null && !registries.isEmpty()) {
             for (RegistryConfig config : registries) {
+                //获取配置中的地址
                 String address = config.getAddress();
                 if (address == null || address.length() == 0) {
+                    //默认值为0.0.0.0
                     address = Constants.ANYHOST_VALUE;
                 }
+                //从系统属性中获取地址
                 String sysaddress = System.getProperty("dubbo.registry.address");
                 if (sysaddress != null && sysaddress.length() > 0) {
                     address = sysaddress;
                 }
+
+                //注册中心地址合法
                 if (address.length() > 0 && !RegistryConfig.NO_AVAILABLE.equalsIgnoreCase(address)) {
+
+                    //参数map
                     Map<String, String> map = new HashMap<String, String>();
+                    //将配置对象上的参数添加到map上
                     appendParameters(map, application);
                     appendParameters(map, config);
+
+                    //添加path,dubbo,timestamp,pid等属性
                     map.put("path", RegistryService.class.getName());
                     map.put("dubbo", Version.getProtocolVersion());
+
                     map.put(Constants.TIMESTAMP_KEY, String.valueOf(System.currentTimeMillis()));
+
                     if (ConfigUtils.getPid() > 0) {
                         map.put(Constants.PID_KEY, String.valueOf(ConfigUtils.getPid()));
                     }
+
+                    //添加protocol属性
                     if (!map.containsKey("protocol")) {
                         if (ExtensionLoader.getExtensionLoader(RegistryFactory.class).hasExtension("remote")) {
                             map.put("protocol", "remote");
@@ -186,10 +200,15 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                             map.put("protocol", "dubbo");
                         }
                     }
+
+                    //解析URL对象
                     List<URL> urls = UrlUtils.parseURLs(address, map);
+                    //添加URL至注册表
                     for (URL url : urls) {
+
                         url = url.addParameter(Constants.REGISTRY_KEY, url.getProtocol());
                         url = url.setProtocol(Constants.REGISTRY_PROTOCOL);
+
                         if ((provider && url.getParameter(Constants.REGISTER_KEY, true))
                                 || (!provider && url.getParameter(Constants.SUBSCRIBE_KEY, true))) {
                             registryList.add(url);
@@ -246,6 +265,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         return null;
     }
 
+    //校验接口的方法与<dubbo:method>的配置
     protected void checkInterfaceAndMethods(Class<?> interfaceClass, List<MethodConfig> methods) {
         // interface cannot be null
         if (interfaceClass == null) {

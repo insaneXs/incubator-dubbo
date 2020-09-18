@@ -26,6 +26,7 @@ import java.io.OutputStream;
 
 /**
  * Codec. (SPI, Singleton, ThreadSafe)
+ * 编解码器
  */
 @Deprecated
 @SPI

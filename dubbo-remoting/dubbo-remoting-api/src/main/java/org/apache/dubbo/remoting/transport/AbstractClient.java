@@ -44,24 +44,32 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * AbstractClient
+ * AbstractClient 客户端类
  */
 public abstract class AbstractClient extends AbstractEndpoint implements Client {
 
     protected static final String CLIENT_THREAD_POOL_NAME = "DubboClientHandler";
     private static final Logger logger = LoggerFactory.getLogger(AbstractClient.class);
     private static final AtomicInteger CLIENT_THREAD_POOL_ID = new AtomicInteger();
+
     private static final ScheduledThreadPoolExecutor reconnectExecutorService = new ScheduledThreadPoolExecutor(2, new NamedThreadFactory("DubboClientReconnectTimer", true));
+
     private final Lock connectLock = new ReentrantLock();
+
     private final boolean send_reconnect;
     private final AtomicInteger reconnect_count = new AtomicInteger(0);
+
     // Reconnection error log has been called before?
     private final AtomicBoolean reconnect_error_log_flag = new AtomicBoolean(false);
+
     // reconnect warning period. Reconnect warning interval (log warning after how many times) //for test
     private final int reconnect_warning_period;
     private final long shutdown_timeout;
+
     protected volatile ExecutorService executor;
+
     private volatile ScheduledFuture<?> reconnectExecutorFuture = null;
+
     // the last successed connected time
     private long lastConnectedTime = System.currentTimeMillis();
 
@@ -69,13 +77,16 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     public AbstractClient(URL url, ChannelHandler handler) throws RemotingException {
         super(url, handler);
 
+        //重连后是否重发
         send_reconnect = url.getParameter(Constants.SEND_RECONNECT_KEY, false);
 
+        //超时关闭时间
         shutdown_timeout = url.getParameter(Constants.SHUTDOWN_TIMEOUT_KEY, Constants.DEFAULT_SHUTDOWN_TIMEOUT);
 
         // The default reconnection interval is 2s, 1800 means warning interval is 1 hour.
         reconnect_warning_period = url.getParameter("reconnect.waring.period", 1800);
 
+        //创建客户端
         try {
             doOpen();
         } catch (Throwable t) {
@@ -84,6 +95,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
                     "Failed to start " + getClass().getSimpleName() + " " + NetUtils.getLocalAddress()
                             + " connect to the server " + getRemoteAddress() + ", cause: " + t.getMessage(), t);
         }
+        //发起连接
         try {
             // connect.
             connect();
@@ -105,6 +117,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
                             + " connect to the server " + getRemoteAddress() + ", cause: " + t.getMessage(), t);
         }
 
+        //获取线程池
         executor = (ExecutorService) ExtensionLoader.getExtensionLoader(DataStore.class)
                 .getDefaultExtension().get(Constants.CONSUMER_SIDE, Integer.toString(url.getPort()));
         ExtensionLoader.getExtensionLoader(DataStore.class)
@@ -118,6 +131,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
     }
 
     /**
+     * 从URL中获取重连参数
      * @param url
      * @return 0-false
      */
@@ -143,6 +157,9 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
 
     /**
      * init reconnect thread
+     */
+    /**
+     * 定时检查连接是否建立，如果断开则发起重连
      */
     private synchronized void initConnectStatusCheckCommand() {
         //reconnect=false to close reconnect
@@ -177,6 +194,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         }
     }
 
+    //取消定时检查及重连的任务
     private synchronized void destroyConnectStatusCheckCommand() {
         try {
             if (reconnectExecutorFuture != null && !reconnectExecutorFuture.isDone()) {
@@ -192,10 +210,12 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         return Executors.newCachedThreadPool(new NamedThreadFactory(CLIENT_THREAD_POOL_NAME + CLIENT_THREAD_POOL_ID.incrementAndGet() + "-" + getUrl().getAddress(), true));
     }
 
+    //获取连接地址
     public InetSocketAddress getConnectAddress() {
         return new InetSocketAddress(NetUtils.filterLocalHost(getUrl().getHost()), getUrl().getPort());
     }
 
+    //获取远端地址
     @Override
     public InetSocketAddress getRemoteAddress() {
         Channel channel = getChannel();
@@ -204,6 +224,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         return channel.getRemoteAddress();
     }
 
+    //获取本地地址
     @Override
     public InetSocketAddress getLocalAddress() {
         Channel channel = getChannel();
@@ -265,14 +286,19 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         channel.send(message, sent);
     }
 
+    //发起连接
     protected void connect() throws RemotingException {
         connectLock.lock();
         try {
+            //避免重复连接
             if (isConnected()) {
                 return;
             }
+            //初始化负责连接状态检查和负责重连的定时任务
             initConnectStatusCheckCommand();
+            //开始连接
             doConnect();
+
             if (!isConnected()) {
                 throw new RemotingException(this, "Failed connect to server " + getRemoteAddress() + " from " + getClass().getSimpleName() + " "
                         + NetUtils.getLocalHost() + " using dubbo version " + Version.getVersion()
@@ -284,6 +310,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
                             + ", channel is " + this.getChannel());
                 }
             }
+            //重置统计及标记位
             reconnect_count.set(0);
             reconnect_error_log_flag.set(false);
         } catch (RemotingException e) {
@@ -297,11 +324,14 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         }
     }
 
+    //断开连接
     public void disconnect() {
         connectLock.lock();
         try {
+            //取消重连的定时任务
             destroyConnectStatusCheckCommand();
             try {
+                //关闭通道，清理资源
                 Channel channel = getChannel();
                 if (channel != null) {
                     channel.close();
@@ -310,6 +340,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
                 logger.warn(e.getMessage(), e);
             }
             try {
+                //开始断开连接
                 doDisConnect();
             } catch (Throwable e) {
                 logger.warn(e.getMessage(), e);
@@ -319,12 +350,14 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
         }
     }
 
+    //重连
     @Override
     public void reconnect() throws RemotingException {
         disconnect();
         connect();
     }
 
+    //关闭客户端
     @Override
     public void close() {
         try {
