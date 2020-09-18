@@ -29,19 +29,19 @@ We are now collecting dubbo user info in order to help us to improve dubbo bette
 
 ### 各模块功能说明  
 * dubbo-bootstrap 启动引导  
-* dubbo-cluster 
+* dubbo-cluster 集群模块 主要负责Proxy -> Invoker之间进行Router
 * dubbo-common 通用组件  
 * dubbo-compatible  
-* dubbo-config 配置相关 
+* dubbo-config 配置相关(包括注册中心配置，引用的服务配置，暴露的服务配置，协议配置等)
 * dubbo-container  
 * dubbo-demo  
 * dubbo-filter 
 * dubbo-monitor
 * dubbo-plugin
-* dubbo-registry  注册中心
-* dubbo-remoting 负责传输
-* dubbo-rpc RPC核心功能
-* dubbo-serialization 负责序列化
+* dubbo-registry  注册中心(支持的注册中心有 zookeeper, redis)
+* dubbo-remoting 负责传输 (底层可用的通信框架有 netty mina http webservice)
+* dubbo-rpc RPC核心功能 抽象整个RPC通信过程 (Proxy -> serialize -> request  -> Invoker -> reflect -> response -> proxy.return) 以及RPC协议的选择
+* dubbo-serialization 负责序列化(支持fastjson,hessian2,jdk等)
 * dubbo-test  
 
 #### dubbo-remoting

@@ -40,6 +40,10 @@ import java.util.regex.Pattern;
  *
  * @export
  */
+
+/**
+ * 抽象的配置类 提供基本添加属性 和 属性校验的能力
+ */
 public abstract class AbstractConfig implements Serializable {
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractConfig.class);

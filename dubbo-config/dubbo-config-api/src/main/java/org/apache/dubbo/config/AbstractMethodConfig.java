@@ -23,8 +23,8 @@ import org.apache.dubbo.rpc.cluster.LoadBalance;
 import java.util.Map;
 
 /**
- * AbstractMethodConfig
- *
+ * 针对方法配置的抽象类
+ * 定义了方法超时时间， 重试次数，是否缓存 等配置
  * @export
  */
 public abstract class AbstractMethodConfig extends AbstractConfig {

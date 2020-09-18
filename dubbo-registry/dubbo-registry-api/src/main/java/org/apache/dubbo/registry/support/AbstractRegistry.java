@@ -51,7 +51,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * AbstractRegistry. (SPI, Prototype, ThreadSafe)
- *
+ * 周详的注册中心 主要实现了将配置属性序列化的功能
  */
 public abstract class AbstractRegistry implements Registry {
 
