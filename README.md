@@ -45,6 +45,10 @@ We are now collecting dubbo user info in order to help us to improve dubbo bette
 * dubbo-test  
 
 ### 已读代码明细
+#### dubbo-common  
+    - org.apache.dubbo.common
+        - extension 
+            - ExtensionLoader  
 #### dubbo-remoting
 ##### dubbo-remoting-api
     - org.apache.dubbo.remoting
