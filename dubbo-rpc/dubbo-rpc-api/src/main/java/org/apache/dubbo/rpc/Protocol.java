@@ -22,13 +22,14 @@ import org.apache.dubbo.common.extension.SPI;
 
 /**
  * Protocol. (API/SPI, Singleton, ThreadSafe)
+ * 协议的抽象接口
  */
 @SPI("dubbo")
 public interface Protocol {
 
     /**
      * Get default port when user doesn't config the port.
-     *
+     * 获取默认的端口
      * @return default port
      */
     int getDefaultPort();
@@ -45,6 +46,13 @@ public interface Protocol {
      * @param invoker Service invoker
      * @return exporter reference for exported service, useful for unexport the service later
      * @throws RpcException thrown when error occurs during export the service, for example: port is occupied
+     */
+    /**
+     * 通过Protocol导出协议
+     * @param invoker 封装服务调用过程 通常会有服务器收到调用信息 在根据Invocation找出Invoker 通过doInvoke调用服务
+     * @param <T>
+     * @return
+     * @throws RpcException
      */
     @Adaptive
     <T> Exporter<T> export(Invoker<T> invoker) throws RpcException;
@@ -63,6 +71,14 @@ public interface Protocol {
      * @param url  URL address for the remote service
      * @return invoker service's local proxy
      * @throws RpcException when there's any error while connecting to the service provider
+     */
+    /**
+     * 通过Protocol获取对服务的引用
+     * @param type 引用的接口
+     * @param url 参数类型
+     * @param <T>
+     * @return Invoker 封装了服务调用过程中 路由选择 通过网络发送请求
+     * @throws RpcException
      */
     @Adaptive
     <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException;

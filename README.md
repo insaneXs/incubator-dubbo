@@ -45,10 +45,27 @@ We are now collecting dubbo user info in order to help us to improve dubbo bette
 * dubbo-test  
 
 ### 已读代码明细
+#### dubbo-cluster
+    - org.apache.dubbo.rpc.cluster
+        - directory
+            - AbstractDirectroy
+        - support
+            - AbstractClusterInvoker
+            - FailoverClusterInovker
 #### dubbo-common  
     - org.apache.dubbo.common
         - extension 
             - ExtensionLoader  
+#### dubbo-config
+##### dubbo-config-api
+    - org.apache.dubbo.config
+        - ReferenceConfig
+        - ServiceConfig
+#### dubbo-registry
+##### dubbo-registry-api
+    - org.apache.dubbo.registry
+        - integration
+            - RegistryDiectory
 #### dubbo-remoting
 ##### dubbo-remoting-api
     - org.apache.dubbo.remoting
@@ -99,3 +116,11 @@ We are now collecting dubbo user info in order to help us to improve dubbo bette
         - NettyCodecAdapter
         - NettyServer
         - NettyServerHandler
+        
+### dubbo-rpc
+#### dubbo-rpc-api
+    - org.apache.dubbo.rpc
+        - Invocation
+        - Invoker
+        - InvokerListener
+        - Protocol

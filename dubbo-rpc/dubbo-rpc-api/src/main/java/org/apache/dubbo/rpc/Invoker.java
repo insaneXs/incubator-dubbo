@@ -20,7 +20,7 @@ import org.apache.dubbo.common.Node;
 
 /**
  * Invoker. (API/SPI, Prototype, ThreadSafe)
- *
+ * Invoker可以理解为调用过程的一个抽象 具体的调用过程可能是本地的 也可能是远端的 也可能是集群下的
  * @see org.apache.dubbo.rpc.Protocol#refer(Class, org.apache.dubbo.common.URL)
  * @see org.apache.dubbo.rpc.InvokerListener
  * @see org.apache.dubbo.rpc.protocol.AbstractInvoker
@@ -32,11 +32,12 @@ public interface Invoker<T> extends Node {
      *
      * @return service interface.
      */
+    //获取调用的接口
     Class<T> getInterface();
 
     /**
      * invoke.
-     *
+     * 反射调用
      * @param invocation
      * @return result
      * @throws RpcException

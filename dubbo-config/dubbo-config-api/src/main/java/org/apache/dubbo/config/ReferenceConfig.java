@@ -157,13 +157,17 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         return urls;
     }
 
+    //获取服务的引用
     public synchronized T get() {
         if (destroyed) {
             throw new IllegalStateException("Already destroyed!");
         }
+        //如果服务未被引用过 先进行初始化
         if (ref == null) {
+            //引用
             init();
         }
+        //返回引用
         return ref;
     }
 
@@ -184,6 +188,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         ref = null;
     }
 
+    //被引用的服务初始化的过程
     private void init() {
         if (initialized) {
             return;
@@ -201,6 +206,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         if (ProtocolUtils.isGeneric(getGeneric())) {
             interfaceClass = GenericService.class;
         } else {
+            //确定被引用的类
             try {
                 interfaceClass = Class.forName(interfaceName, true, Thread.currentThread()
                         .getContextClassLoader());
@@ -211,6 +217,8 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         }
         String resolve = System.getProperty(interfaceName);
         String resolveFile = null;
+
+        //可以从特定的地方加载resolve文件（特殊的配置文件 通常在生产环境下调试使用 比如配置直接）
         if (resolve == null || resolve.length() == 0) {
             resolveFile = System.getProperty("dubbo.resolve.file");
             if (resolveFile == null || resolveFile.length() == 0) {
@@ -247,6 +255,8 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 }
             }
         }
+
+        //获取各种配置
         if (consumer != null) {
             if (application == null) {
                 application = consumer.getApplication();
@@ -277,8 +287,12 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 monitor = application.getMonitor();
             }
         }
+
+        //校验 及检查参数
         checkApplication();
         checkStubAndMock(interfaceClass);
+
+        //拼接URL 消费端信息 Dubbo版本号 时间戳 Pid 服务版本号等
         Map<String, String> map = new HashMap<String, String>();
         resolveAsyncInterface(interfaceClass, map);
         Map<Object, Object> attributes = new HashMap<Object, Object>();
@@ -303,11 +317,15 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             }
         }
         map.put(Constants.INTERFACE_KEY, interfaceName);
+
+        //从其他配置中拼接参数
         appendParameters(map, application);
         appendParameters(map, module);
         appendParameters(map, consumer, Constants.DEFAULT_KEY);
         appendParameters(map, this);
         String prefix = StringUtils.getServiceKey(map);
+
+        //添加方法信息（方法重试次数等）
         if (methods != null && !methods.isEmpty()) {
             for (MethodConfig method : methods) {
                 appendParameters(map, method, method.getName());
@@ -333,15 +351,20 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
 
         //attributes are stored by system context.
         StaticContext.getSystemContext().putAll(attributes);
+        //创建代理
         ref = createProxy(map);
         ConsumerModel consumerModel = new ConsumerModel(getUniqueServiceName(), this, ref, interfaceClass.getMethods());
         ApplicationModel.initConsumerModel(getUniqueServiceName(), consumerModel);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    /**
+     * 创建被引用接口的动态代理
+     */
     private T createProxy(Map<String, String> map) {
         URL tmpUrl = new URL("temp", "localhost", 0, map);
         final boolean isJvmRefer;
+        //判断是否是本地引用
         if (isInjvm() == null) {
             if (url != null && url.length() > 0) { // if a url is specified, don't do local reference
                 isJvmRefer = false;
@@ -355,6 +378,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             isJvmRefer = isInjvm().booleanValue();
         }
 
+        //如果是本地引用 直接找的localExport的Invoker
         if (isJvmRefer) {
             URL url = new URL(Constants.LOCAL_PROTOCOL, NetUtils.LOCALHOST, 0, interfaceClass.getName()).addParameters(map);
             invoker = refprotocol.refer(interfaceClass, url);
@@ -362,6 +386,8 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 logger.info("Using injvm service " + interfaceClass.getName());
             }
         } else {
+            //说明是remote引用
+            //用户是否指定了URL
             if (url != null && url.length() > 0) { // user specified URL, could be peer-to-peer address, or register center's address.
                 String[] us = Constants.SEMICOLON_SPLIT_PATTERN.split(url);
                 if (us != null && us.length > 0) {
@@ -377,8 +403,10 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                         }
                     }
                 }
-            } else { // assemble URL from register center's configuration
+            } else { //如果没指定 则从各种配置及参数中获取注册中心URL
+                // assemble URL from register center's configuration
                 List<URL> us = loadRegistries(false);
+
                 if (us != null && !us.isEmpty()) {
                     for (URL u : us) {
                         URL monitorUrl = loadMonitor(u);
@@ -388,22 +416,29 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                         urls.add(u.addParameterAndEncoded(Constants.REFER_KEY, StringUtils.toQueryString(map)));
                     }
                 }
+                //未得到注册中心的URL报错
                 if (urls.isEmpty()) {
                     throw new IllegalStateException("No such any registry to reference " + interfaceName + " on the consumer " + NetUtils.getLocalHost() + " use dubbo version " + Version.getVersion() + ", please config <dubbo:registry address=\"...\" /> to your spring config.");
                 }
             }
 
+            //如果只有一个注册中心
             if (urls.size() == 1) {
+                //直接引用该注册中心协议的Invoker
                 invoker = refprotocol.refer(interfaceClass, urls.get(0));
-            } else {
+            } else {//如果有多个注册中心
                 List<Invoker<?>> invokers = new ArrayList<Invoker<?>>();
                 URL registryURL = null;
+                //针对每个注册中心获取引用
                 for (URL url : urls) {
+                    //这里的Invokers添加的Invoker类型同样是 ClusterInvoker 内部有DirectoryRegistry维护了真实的Invokers
                     invokers.add(refprotocol.refer(interfaceClass, url));
                     if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
                         registryURL = url; // use last registry url
                     }
                 }
+                //创建StaticDirectory 整合ClusterInvoker
+                //多注册中心下使用的是AvailableCluster
                 if (registryURL != null) { // registry url is available
                     // use AvailableCluster only when register's cluster is available
                     URL u = registryURL.addParameter(Constants.CLUSTER_KEY, AvailableCluster.NAME);
@@ -428,6 +463,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
             logger.info("Refer dubbo service " + interfaceClass.getName() + " from url " + invoker.getUrl());
         }
         // create service proxy
+        //创建引用服务的动态代理 由Invoker封装调用过程
         return (T) proxyFactory.getProxy(invoker);
     }
 

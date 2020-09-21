@@ -20,7 +20,7 @@ import java.util.Map;
 
 /**
  * Invocation. (API, Prototype, NonThreadSafe)
- *
+ * Invocation 可以理解为反射过程中的方法连接点
  * @serial Don't change the class name and package name.
  * @see org.apache.dubbo.rpc.Invoker#invoke(Invocation)
  * @see org.apache.dubbo.rpc.RpcInvocation
@@ -29,7 +29,7 @@ public interface Invocation {
 
     /**
      * get method name.
-     *
+     * 获取反射调用的方法名
      * @return method name.
      * @serial
      */
@@ -37,7 +37,7 @@ public interface Invocation {
 
     /**
      * get parameter types.
-     *
+     * 方法参数类型
      * @return parameter types.
      * @serial
      */
@@ -45,7 +45,7 @@ public interface Invocation {
 
     /**
      * get arguments.
-     *
+     * 方法参数
      * @return arguments.
      * @serial
      */
@@ -53,7 +53,7 @@ public interface Invocation {
 
     /**
      * get attachments.
-     *
+     * 附加属性
      * @return attachments.
      * @serial
      */
@@ -77,7 +77,7 @@ public interface Invocation {
 
     /**
      * get the invoker in current context.
-     *
+     * 获取invoker
      * @return invoker.
      * @transient
      */

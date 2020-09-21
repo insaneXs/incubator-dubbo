@@ -35,7 +35,7 @@ import java.util.List;
 
 /**
  * Abstract implementation of Directory: Invoker list returned from this Directory's list method have been filtered by Routers
- *
+ * Directory的抽象实现
  */
 public abstract class AbstractDirectory<T> implements Directory<T> {
 
@@ -66,12 +66,21 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
         setRouters(routers);
     }
 
+    /**
+     * 找出这个Invocation 相关的Invokers
+     * @param invocation
+     * @return
+     * @throws RpcException
+     */
     @Override
     public List<Invoker<T>> list(Invocation invocation) throws RpcException {
         if (destroyed) {
             throw new RpcException("Directory already destroyed .url: " + getUrl());
         }
+        //列出所有Invoker
         List<Invoker<T>> invokers = doList(invocation);
+
+        //通过路由筛选一遍
         List<Router> localRouters = this.routers; // local reference
         if (localRouters != null && !localRouters.isEmpty()) {
             for (Router router : localRouters) {

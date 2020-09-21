@@ -30,12 +30,13 @@ import org.apache.dubbo.rpc.RpcException;
 import java.util.List;
 
 /**
- * ListenerProtocol
+ * ProtocolFilterWrapper  Protocol的Wrapper类 负责对Protocol.export()/refer()时 对创建的Invoker进行拦截 实现Filter功能
  */
 public class ProtocolFilterWrapper implements Protocol {
 
     private final Protocol protocol;
 
+    //包装类
     public ProtocolFilterWrapper(Protocol protocol) {
         if (protocol == null) {
             throw new IllegalArgumentException("protocol == null");
@@ -43,8 +44,10 @@ public class ProtocolFilterWrapper implements Protocol {
         this.protocol = protocol;
     }
 
+    //创建Invoker链
     private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) {
         Invoker<T> last = invoker;
+        //根据条件找合适的Extension
         List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group);
         if (!filters.isEmpty()) {
             for (int i = filters.size() - 1; i >= 0; i--) {
@@ -92,11 +95,13 @@ public class ProtocolFilterWrapper implements Protocol {
         return protocol.getDefaultPort();
     }
 
+    //导出服务
     @Override
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         if (Constants.REGISTRY_PROTOCOL.equals(invoker.getUrl().getProtocol())) {
             return protocol.export(invoker);
         }
+        //先对Invoker进行包装 在对包装后的Invoker进行导出
         return protocol.export(buildInvokerChain(invoker, Constants.SERVICE_FILTER_KEY, Constants.PROVIDER));
     }
 
